@@ -45,3 +45,19 @@ def test_api_schedule_roundtrip() -> None:
     assert "total_priority" in data
     assert data["total_priority"] >= 11
     assert all("task_id" in t for t in data["tasks"])
+    
+
+def test_api_rejects_naive_datetimes() -> None:
+    app = create_app()
+    client = TestClient(app)
+
+    payload = {
+        "task_id": "N1",
+        "start": "2026-01-16T10:00:00",
+        "end": "2026-01-16T11:00:00",
+        "priority": 3,
+    }
+
+    response = client.post("/tasks", json=payload)
+    assert response.status_code == 400
+    assert "timezone-aware" in response.json()["detail"]
