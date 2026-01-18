@@ -43,26 +43,6 @@ def weighted_interval_schedule(tasks: Iterable[Task]) -> ScheduleResult:
         lo, hi = 0, len(ends) - 1
         ans = -1
         while lo <= hi:
-          
-
-def test_mixed_timezone_awareness_rejected() -> None:
-    tz = timezone.utc
-    aware_start = datetime(2026, 1, 16, 9, tzinfo=tz)
-    aware_end = datetime(2026, 1, 16, 10, tzinfo=tz)
-    naive_start = datetime(2026, 1, 16, 10)
-    naive_end = datetime(2026, 1, 16, 11)
-
-    tasks = [
-        Task("T1", aware_start, aware_end, 5),
-        Task("T2", naive_start, naive_end, 4),
-    ]
-
-    try:
-        weighted_interval_schedule(tasks)
-    except ValueError as exc:
-        assert "timezone" in str(exc)
-    else:
-        raise AssertionError("Expected ValueError for mixed timezone awareness")
             mid = (lo + hi) // 2
             if ends[mid] <= start:
                 ans = mid
