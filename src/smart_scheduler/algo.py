@@ -29,6 +29,10 @@ def weighted_interval_schedule(tasks: Iterable[Task]) -> ScheduleResult:
     if not task_list:
         return ScheduleResult(tasks=[], total_priority=0)
 
+     timezone_flags = {t.start.tzinfo is not None and t.start.tzinfo.utcoffset(t.start) is not None for t in task_list}
+    if len(timezone_flags) > 1:
+        raise ValueError("cannot mix naive and timezone-aware datetimes")
+        
     # Stable deterministic sort: end, start, id
     task_list.sort(key=lambda t: (t.end, t.start, t.task_id))
 
