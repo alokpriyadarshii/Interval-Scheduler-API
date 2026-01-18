@@ -40,6 +40,8 @@ class PreviewIn(BaseModel):
 def _to_task(t: TaskIn) -> Task:
     tid = t.task_id or str(uuid4())
     try:
+        if not _is_timezone_aware(t.start) or not _is_timezone_aware(t.end):
+            raise ValueError("start and end must be timezone-aware")
         return Task(task_id=tid, start=t.start, end=t.end, priority=t.priority, meta=t.meta)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -51,6 +53,10 @@ def _task_to_out(t: Task) -> TaskOut:
 
 def _result_to_out(res: ScheduleResult) -> ScheduleOut:
     return ScheduleOut(total_priority=res.total_priority, tasks=[_task_to_out(t) for t in res.tasks])
+
+
+def _is_timezone_aware(value: datetime) -> bool:
+    return value.tzinfo is not None and value.tzinfo.utcoffset(value) is not None
 
 
 def create_app(store: Optional[TaskStore] = None) -> FastAPI:
