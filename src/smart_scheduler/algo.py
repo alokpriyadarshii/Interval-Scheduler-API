@@ -64,10 +64,10 @@ def weighted_interval_schedule(tasks: Iterable[Task]) -> ScheduleResult:
             dp[i] = excl
             choose[i] = False
         else:
-            # Tie-breaker: prefer including if it doesn't worsen determinism.
-            # This yields a stable schedule and often smaller "gaps".
-            dp[i] = incl
-            choose[i] = True
+            # Tie-breaker: prefer earlier-ending solutions by excluding
+            # the current (later-ending) task in a stable ordering.
+            dp[i] = excl
+            choose[i] = False
 
     selected: List[Task] = []
     i = len(task_list) - 1
